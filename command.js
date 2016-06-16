@@ -34,10 +34,4 @@ casper.waitForText("dashboard", function(){
   this.die("failure")
 })
 
-
-
-// casper.thenOpen('http://phantomjs.org', function() {
-//     this.echo('Second Page: ' + this.getTitle());
-// });
-
 casper.run();
