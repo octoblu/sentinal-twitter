@@ -1,14 +1,14 @@
 #!/usr/bin/env casperjs
 
 var system = require('system');
+var casper = require('casper').create();
 
 
 var TWITTER_USERNAME = system.env.TWITTER_USERNAME;
 var TWITTER_PASSWORD = system.env.TWITTER_PASSWORD;
 
-if(!TWITTER_USERNAME || !TWITTER_PASSWORD) throw new Error('Missing required env: TWITTER_USERNAME or TWITTER_PASSWORD')
+if(!TWITTER_USERNAME || !TWITTER_PASSWORD) casper.die('Missing required env: TWITTER_USERNAME or TWITTER_PASSWORD')
 
-var casper = require('casper').create();
 casper.start('https://app.octoblu.com/');
 
 casper.waitForText("Twitter")
@@ -29,10 +29,9 @@ casper.then(function(){
 
 casper.waitForText("dashboard", function(){
   this.echo("success");
-  this.capture("success.png");
+  this.exit()
 }, function(){
-  this.echo("failure");
-  this.capture("failure.png");
+  this.die("failure")
 })
 
 
