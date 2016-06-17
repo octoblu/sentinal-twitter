@@ -1,7 +1,12 @@
 #!/usr/bin/env casperjs
 
 var system = require('system');
-var casper = require('casper').create();
+var casper = require('casper').create({
+  onError: (function(error){
+    casper.echo("failure due to error: " + error)
+    casper.exit(1)
+  })
+});
 
 
 var TWITTER_USERNAME = system.env.TWITTER_USERNAME;
