@@ -1,9 +1,11 @@
 #!/usr/bin/env casperjs
 
+
 var system = require('system');
 var casper = require('casper').create({
   onError: (function(error){
-    casper.echo("failure due to error: " + error)
+    console.log("failure due to error: " + error)
+    console.log(this.echo(casper.captureBase64('png')))
     casper.exit(1)
   })
 });
@@ -12,7 +14,10 @@ var casper = require('casper').create({
 var TWITTER_USERNAME = system.env.TWITTER_USERNAME;
 var TWITTER_PASSWORD = system.env.TWITTER_PASSWORD;
 
-if(!TWITTER_USERNAME || !TWITTER_PASSWORD) casper.die('Missing required env: TWITTER_USERNAME or TWITTER_PASSWORD')
+if(!TWITTER_USERNAME || !TWITTER_PASSWORD)  {
+  console.log('Missing required env: TWITTER_USERNAME or TWITTER_PASSWORD')
+  this.exit(1)
+}
 
 casper.start('https://app.octoblu.com/');
 
@@ -36,7 +41,9 @@ casper.waitForText("dashboard", function(){
   this.echo("success");
   this.exit()
 }, function(){
-  this.die("failure")
+  console.log("failure")
+  console.log(this.echo(casper.captureBase64('png')))
+  this.exit(1)
 })
 
 casper.run();
