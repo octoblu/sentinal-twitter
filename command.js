@@ -1,50 +1,39 @@
 #!/usr/bin/env casperjs
 
-var system = require('system');
-var casper = require('casper').create({
-  waitTimeout: (10 * 1000),
-  onError: (function(error){
-    console.log("failure due to error: " + error)
-    console.log(this.echo(casper.captureBase64('png')))
-    casper.exit(1)
-  })
-});
-
+var system  = require('system');
+var helpers = require('./helpers');
+var Casper  = require('casper');
+var casper  = helpers.buildCasper(Casper);
 
 var TWITTER_USERNAME = system.env.TWITTER_USERNAME;
 var TWITTER_PASSWORD = system.env.TWITTER_PASSWORD;
 
-if(!TWITTER_USERNAME || !TWITTER_PASSWORD)  {
+if(!TWITTER_USERNAME || !TWITTER_PASSWORD) {
   console.log('Missing required env: TWITTER_USERNAME or TWITTER_PASSWORD')
   this.exit(1)
 }
 
-casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.84 Safari/537.36');
-casper.start('https://app.octoblu.com/');
-
-casper.waitForText("Twitter")
-
-casper.then(function() {
-  this.click('.auth__button--twitter');
+helpers.thenWithErrors(casper, function() {
+  casper.click('.auth__button--twitter');
 })
 
-casper.waitForText("access to use your account")
+casper.waitForSelector("#oauth_form");
 
-casper.then(function(){
-  this.fillLabels('#oauth_form', {
+helpers.thenWithErrors(casper, function() {
+  casper.fillLabels('#oauth_form', {
     'Username or email': TWITTER_USERNAME,
     'Password': TWITTER_PASSWORD
   })
-  this.click("#allow")
+  casper.click("#allow");
 })
 
-casper.waitForText("dashboard", function(){
-  this.echo("success");
-  this.exit()
-}, function(){
-  console.log("failure")
-  console.log(this.echo(casper.captureBase64('png')))
-  this.exit(1)
+helpers.assertOnOctobluDashboard(casper);
+helpers.thenWithErrors(casper, function(){
+  helpers.logout(casper);
+});
+helpers.thenWithErrors(casper, function(){
+  casper.echo("success");
+  casper.exit(0);
 })
 
 casper.run();
