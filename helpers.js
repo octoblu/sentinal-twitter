@@ -1,9 +1,9 @@
 var assertOnOctobluDashboard = function(casper){
-  return casper.waitForText("dashboard", function(){
+  return casper.waitForSelector(".TabBar-title", function(){
     return;
   }, function(){
     console.log("failure to load dashboard")
-    console.log(casper.echo(casper.captureBase64('png')))
+    casper.capture('./images/' + randomFilename());
     casper.exit(1)
     casper.waitForSelector('.endo-of-the-world', (function(){}), (function(){}), 30000);
   });
@@ -14,7 +14,7 @@ var buildCasper = function(Casper){
     waitTimeout: (10 * 1000),
     onError: (function(error){
       console.log("failure due to error: " + error)
-      console.log(casper.echo(casper.captureBase64('png')))
+      casper.capture('./images/' + randomFilename());
       casper.exit(1)
       casper.waitForSelector('.endo-of-the-world', (function(){}), (function(){}), 30000);
     })
@@ -26,7 +26,7 @@ var buildCasper = function(Casper){
   casper.waitForSelector(".auth.login");
   casper.on('error', function(error){
     console.log("failure due to casper error: " + error)
-    console.log(casper.echo(casper.captureBase64('png')))
+    casper.capture('./images/' + randomFilename());
     casper.exit(1)
     casper.waitForSelector('.endo-of-the-world', (function(){}), (function(){}), 30000);
   });
@@ -43,12 +43,17 @@ var logout = function(casper){
   casper.waitForSelector(".auth.login");
 }
 
-var reportErrors = function(f) {
+var randomFilename = function(){
+  var a = Math.random();
+  return "image-"+parseInt(a * 1000)+".png";
+}
+
+var reportErrors = function(casper, f) {
   try {
     return f();
   } catch (e) {
     casper.echo("failure in thenWithErrors: " + e)
-    casper.echo(casper.captureBase64('png'))
+    casper.capture('./images/' + randomFilename());
     casper.exit(1)
     casper.waitForSelector('.endo-of-the-world', (function(){}), (function(){}), 30000);
   }
@@ -56,7 +61,7 @@ var reportErrors = function(f) {
 
 var thenWithErrors = function(casper, f){
   return casper.then(function() {
-    return reportErrors(f);
+    return reportErrors(casper, f);
   });
 };
 
