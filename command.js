@@ -3,7 +3,7 @@
 var system  = require('system');
 var helpers = require('./helpers');
 var Casper  = require('casper');
-var casper  = helpers.buildCasper(Casper);
+var casper  = helpers.buildCasper(Casper, 'sentinel-twitter');
 
 var TWITTER_USERNAME = system.env.TWITTER_USERNAME;
 var TWITTER_PASSWORD = system.env.TWITTER_PASSWORD;
